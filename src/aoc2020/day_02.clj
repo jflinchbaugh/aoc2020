@@ -1004,7 +1004,7 @@
 4-9 f: xfcfthqzw
 ")
 
-(defn good? [min max ch pass]
+(defn good-part1? [min max ch pass]
   (let [min (Integer/parseInt min)
         max (Integer/parseInt max)
         ch (-> ch char-array first)
@@ -1013,7 +1013,16 @@
         good-count (count good-chars)]
     (and (>= good-count min) (<= good-count max))))
 
-(defn part-1 [input]
+(defn good-part2? [pos1 pos2 ch pass]
+  (let [pos1 (dec (Integer/parseInt pos1))
+        pos2 (dec (Integer/parseInt pos2))
+        ch (-> ch char-array first)
+        pass-chars (vec pass)
+        good-chars (filter #{ch} [(get pass-chars pos1) (get pass-chars pos2)])
+        good-count (count good-chars)]
+    (= 1 good-count)))
+
+(defn count-good [good? input]
   (->> input
     str/split-lines
     (remove #{""})
@@ -1021,11 +1030,19 @@
     (filter #(apply good? %))
     count))
 
+(def part-1 (partial count-good good-part1?))
+
+(def part-2 (partial count-good good-part2?))
+
 
 (comment
 
   (part-1 input)
 
-  (good? "1" "2" "n" "anbcn")
+  (part-2 input)
+
+  (good-part1? "1" "2" "n" "anbcn")
+
+  (good-part2? "1" "2" "n" "nnbcn")
 
   )
