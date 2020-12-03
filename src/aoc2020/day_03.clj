@@ -332,16 +332,18 @@
                        s/trim
                        s/split-lines
                        (map (comp cycle seq))))
-(defn part-1 []
-  (let [field (field input)
-        path (for [line-number (range (count field))]
-               (nth (nth field line-number) (* line-number 3)))
+
+(defn count-trees [y x field]
+  (let [path (for [line-number (range (count field))]
+               (nth (nth field (* y line-number)) (* x line-number)))
         trees (filter #{\#} path)]
     (count trees)))
+
+(defn part-1 []
+  (count-trees 1 3 (field input)))
 
 (comment
 
   (part-1)
-
 
   )
