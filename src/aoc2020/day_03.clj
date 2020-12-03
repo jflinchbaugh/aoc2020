@@ -333,17 +333,25 @@
                        s/split-lines
                        (map (comp cycle seq))))
 
-(defn count-trees [y x field]
-  (let [path (for [line-number (range (count field))]
-               (nth (nth field (* y line-number)) (* x line-number)))
+(defn count-trees [x y field]
+  (let [path (for [step (range (/ (count field) y))]
+               (nth (nth field (* y step)) (* x step)))
         trees (filter #{\#} path)]
     (count trees)))
 
 (defn part-1 []
-  (count-trees 1 3 (field input)))
+  (count-trees 3 1 (field input)))
+
+(defn part-2 []
+  (let [slopes [[1 1] [3 1] [5 1] [7 1] [1 2]]
+        field (field input)]
+    (reduce * (map #(apply count-trees (conj % field)) slopes))))
 
 (comment
 
   (part-1)
+;; => 286
 
+  (part-2)
+;; => 3638606400
   )
