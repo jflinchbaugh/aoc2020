@@ -1158,10 +1158,15 @@ iyr:2010 byr:1950 pid:405416908
                        "ecl"
                        "pid"})
 
+(defn read-passports [input]
+  (->>
+    (s/split input #"(?m)^$")
+    (map #(apply hash-map (s/split (s/trim %) #"[:\s]")))))
+
 (defn part-1 []
   (->>
-   (s/split input #"(?m)^$")
-   (map #(apply hash-map (s/split (s/trim %) #"[:\s]")))
+    input
+    read-passports
    (map keys)
    (map #(filter required-fields %))
    (map count)
@@ -1169,34 +1174,43 @@ iyr:2010 byr:1950 pid:405416908
    count))
 
 (defn in-range? [v min max]
-  (and 
+  (and
     (not (nil? v))
     (>= (Integer/parseInt v) min)
-    (<= (Integer/parseInt v) max))) 
+    (<= (Integer/parseInt v) max)))
 
 (defn valid-height? [h]
   (cond
-    (re-matches #".*cm" h) (in-range (s/replace h #"\D" "") 150 193)
-    (re-matches #".*in" h) (in-range (s/replace h #"\D" "") 59 76)
+    (nil? h) false
+    (re-matches #".*cm" h) (in-range? (s/replace h #"\D" "") 150 193)
+    (re-matches #".*in" h) (in-range? (s/replace h #"\D" "") 59 76)
     :else false
     ))
 
+(defn valid-hair? [hcl]
+  (and hcl (re-matches #"#[0123456789abcdef]{6}" hcl)))
+
+(defn valid-eyes? [ecl]
+  (#{"amb" "blu" "brn" "gry" "grn" "hzl" "oth"} ecl))
+
+(defn valid-pid? [pid]
+  (and pid (re-matches #"\d{9}" pid)))
+
 (defn valid? [{:strs [byr iyr eyr hgt hcl ecl pid] :as passport}]
   (and
-    (->> passport keys (filter required-fields) count (= 7))
     (in-range? byr 1920 2002)
     (in-range? iyr 2010 2020)
     (in-range? eyr 2020 2030)
     (valid-height? hgt)
-    (re-matches #"#[0123456789abcdef]{6}" hcl)
-    (#{"amb" "blu" "brn" "gry" "grn" "hzl" "oth"} ecl)
-    (re-matches #"\d{9}" pid)
+    (valid-hair? hcl)
+    (valid-eyes? ecl)
+    (valid-pid? pid)
     ))
 
 (defn part-2 []
   (->>
-    (s/split input #"(?m)^$")
-    (map #(apply hash-map (s/split (s/trim %) #"[:\s]")))
+    input
+    read-passports
     (filter valid?)
     count
     ))
@@ -1208,6 +1222,6 @@ iyr:2010 byr:1950 pid:405416908
 
 
   (part-2)
-
+;; => 188
 
   )
