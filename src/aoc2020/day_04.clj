@@ -1151,29 +1151,63 @@ iyr:2010 byr:1950 pid:405416908
 ")
 
 (def required-fields #{"byr"
-                      "iyr"
-                      "eyr"
-                      "hgt"
-                      "hcl"
-                      "ecl"
-                      "pid"
-                      #_"cid"})
+                       "iyr"
+                       "eyr"
+                       "hgt"
+                       "hcl"
+                       "ecl"
+                       "pid"})
 
-(defn part-1 [] (->>
-                  (s/split input #"(?m)^$")
-                  (map #(apply hash-map (s/split (s/trim %) #"[:\s]")))
-                  (map keys)
-                  (map #(filter required-fields %))
-                  (map count)
-                  (filter #(= 7 %))
-                  count
-                  ))
+(defn part-1 []
+  (->>
+   (s/split input #"(?m)^$")
+   (map #(apply hash-map (s/split (s/trim %) #"[:\s]")))
+   (map keys)
+   (map #(filter required-fields %))
+   (map count)
+   (filter #(= 7 %))
+   count))
+
+(defn in-range? [v min max]
+  (and 
+    (not (nil? v))
+    (>= (Integer/parseInt v) min)
+    (<= (Integer/parseInt v) max))) 
+
+(defn valid-height? [h]
+  (cond
+    (re-matches #".*cm" h) (in-range (s/replace h #"\D" "") 150 193)
+    (re-matches #".*in" h) (in-range (s/replace h #"\D" "") 59 76)
+    :else false
+    ))
+
+(defn valid? [{:strs [byr iyr eyr hgt hcl ecl pid] :as passport}]
+  (and
+    (->> passport keys (filter required-fields) count (= 7))
+    (in-range? byr 1920 2002)
+    (in-range? iyr 2010 2020)
+    (in-range? eyr 2020 2030)
+    (valid-height? hgt)
+    (re-matches #"#[0123456789abcdef]{6}" hcl)
+    (#{"amb" "blu" "brn" "gry" "grn" "hzl" "oth"} ecl)
+    (re-matches #"\d{9}" pid)
+    ))
+
+(defn part-2 []
+  (->>
+    (s/split input #"(?m)^$")
+    (map #(apply hash-map (s/split (s/trim %) #"[:\s]")))
+    (filter valid?)
+    count
+    ))
 
 (comment
 
   (part-1)
 ;; => 239
 
+
+  (part-2)
 
 
   )
