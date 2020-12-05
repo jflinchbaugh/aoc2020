@@ -856,16 +856,36 @@ FBFFBFFLLL
 
 (def to-bin-str (comp #(s/replace % #"[FL]" "0") #(s/replace % #"[BR]" "1")))
 
+(def seat-number (comp #(Integer/parseInt % 2) to-bin-str))
+
+
+(defn to-seats [input]
+  (let [lines (-> input s/trim s/split-lines)]
+    (map seat-number lines)))
+
 (defn part-1 [input]
-  (let [lines (-> input s/trim s/split-lines)
-        seat-nums (map (comp #(Integer/parseInt % 2) to-bin-str) lines)]
-    (apply max seat-nums)))
+    (apply max (to-seats input)))
+
+(defn seat-between? [[a b]]
+  (= 2 (Math/abs (- b a))))
+
+(defn avg [coll]
+  (/ (reduce + coll) (count coll)))
+
+(defn part-2 [input]
+  (let [occupied-seats (to-seats input)
+        adjacent-seats (partition 2 1 (sort occupied-seats))]
+    (->>
+      adjacent-seats
+      (filter seat-between?)
+      (map avg)
+      first)))
 
 (comment
-  (part-1 "BFFFBBFRRR")
-;; => 567
-
   (part-1 input)
 ;; => 885
+
+  (part-2 input)
+;; => 623
 
   )
