@@ -873,13 +873,14 @@ FBFFBFFLLL
   (/ (reduce + coll) (count coll)))
 
 (defn part-2 [input]
-  (let [occupied-seats (to-seats input)
-        adjacent-seats (partition 2 1 (sort occupied-seats))]
     (->>
-      adjacent-seats
+      input
+      to-seats
+      sort
+      (partition 2 1)
       (filter seat-between?)
       (map avg)
-      first)))
+      first))
 
 (comment
   (part-1 input)
