@@ -2065,20 +2065,47 @@ mluhjcnbxkoep
 tlqjomu
 ")
 
+(defn split-groups [input]
+  (->
+   input
+   s/trim
+   (s/split #"(?m)^$")))
+
 (defn part-1 []
   (->>
-    (->
-      input
-      s/trim
-      (s/split #"(?m)^$"))
-    (map #(s/replace % #"(?m)\s" ""))
-    (map distinct)
-    (map count)
-    (reduce +)))
+    input
+    split-groups
+   (map #(s/replace % #"(?m)\s" ""))
+   (map distinct)
+   (map count)
+   (reduce +)))
+
+(defn common-answers [grp]
+  (let [merged-answers (sort (reduce concat grp))
+        num-people (count grp)
+        parts (partition-by identity merged-answers)
+        ]
+    (->> parts
+      (filter #(= num-people (count %)))
+      (map first))))
+
+(defn part-2 []
+  (let [answers (->>
+          input
+          split-groups
+          (map (comp #(map seq %) s/split-lines s/trim)))
+        ]
+    (->>
+      answers
+      (map (comp count common-answers))
+      (reduce +))))
 
 (comment
 
   (part-1)
 ;; => 6534
+
+  (part-2)
+;; => 3402
 
   )
