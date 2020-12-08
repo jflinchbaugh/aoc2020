@@ -668,22 +668,53 @@ jmp +1
 
 (defn run-code
   ([code]
-   (run-code code 0 0 #{}))
+   (run-code code 0 0 []))
   ([code acc pos used]
-   (if (used pos)
-     acc
-     (let [[i v] (nth code pos)
+   (cond
+     ((set used) pos) [acc pos] ; terminate for inf loop
+     (= pos (count code)) [acc pos] ; terminate for end
+     :else (let [[i v] (nth code pos)
            n-used (conj used pos)
-           n-pos (+ pos (if (= :jmp i) v 1))
+           n-pos (if (= i :jmp) v (inc pos))
            n-acc (+ acc (if (= :acc i) v 0))]
        (recur code n-acc n-pos n-used)))))
 
+(defn calc-jmp-addrs [code]
+  (map-indexed
+    (fn [pos [i v]]
+      [i (if (= :acc i) v (+ pos v))])
+    code))
+
 (defn part-1 []
-  (-> input parse-code run-code))
+  (-> input parse-code calc-jmp-addrs run-code first))
+
+(defn patch [code pos]
+  (update code pos (fn [[i v]] [({:nop :jmp, :jmp :nop, :acc :acc} i) v])))
+
+(defn successful? [end-address stop-state]
+  (= end-address (second stop-state)))
+
+(defn run-patched-code [code patch-pos]
+  (-> code
+    (patch patch-pos)
+    run-code))
+
+(defn part-2 []
+  (let [positions (-> input parse-code count range)
+        code (-> input parse-code calc-jmp-addrs vec)
+        end-address (count code)]
+    (->>
+      positions
+      (map (partial run-patched-code code))
+      (filter (partial successful? end-address))
+      ffirst)))
 
 (comment
 
   (part-1)
 ;; => 1600
+
+  (part-2)
+;; => 1543
 
   )
