@@ -608,7 +608,7 @@ bright bronze bags contain 1 clear magenta bag, 2 clear gray bags, 2 dull coral 
   )
 
 (defn to-graph-node [[c1 c2 & dsts]]
-  [(str c1 " " c2) (->> dsts colors flatten set)])
+  [(str c1 " " c2) (->> dsts colors flatten)])
 
 (defn parse [line]
   (->
@@ -617,12 +617,12 @@ bright bronze bags contain 1 clear magenta bag, 2 clear gray bags, 2 dull coral 
     (s/split #" +")
     ))
 
-(defn walk [start graph]
+(defn walk-back [start graph]
   (let [this-layer (->>
                      graph
-                     (filter (fn [[dst starts]] (boolean (starts start))))
+                     (filter (fn [[dst starts]] (boolean ((set starts) start))))
                      (map first))]
-    (concat this-layer (flatten (map #(walk % graph) this-layer)))))
+    (concat this-layer (flatten (map #(walk-back % graph) this-layer)))))
 
 (defn bag-graph [input]
   (->>
@@ -636,13 +636,27 @@ bright bronze bags contain 1 clear magenta bag, 2 clear gray bags, 2 dull coral 
   (->>
     input
     bag-graph
-    (walk "shiny gold")
+    (walk-back "shiny gold")
     set
     count)
   )
 
+(defn walk-forward [start graph]
+  (let [this-layer (->> graph (filter #(= start (first %))) first second)]
+    (concat this-layer (flatten (map #(walk-forward % graph) this-layer))))
+  )
+
+(defn part-2 []
+  (->>
+    input
+    bag-graph
+    (walk-forward "shiny gold")
+    count))
+
 (comment
 
   (part-1)
+
+  (part-2)
 
   )
