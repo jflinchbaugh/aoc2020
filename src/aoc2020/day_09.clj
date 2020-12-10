@@ -1017,9 +1017,23 @@
     first
     last))
 
+(defn part-2 []
+  (let [target (part-1)
+        sizes (->> input count (range 2))
+        all-seqs (map #(partition % 1 input) sizes)]
+    (->> 
+      all-seqs
+      (reduce concat)
+      (filter #(= target (reduce + %)))
+      first
+      ((juxt #(apply max %) #(apply min %)))
+      (reduce +))))
+
 (comment
 
-(part-1)
-;; => 258585477
+  (part-1)
+  ;; => 258585477
 
+  (part-2)
+;; => 36981213
   )
