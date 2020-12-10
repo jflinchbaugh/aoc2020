@@ -121,7 +121,7 @@
 (def count-combos {1 1, 2 2, 3 4, 4 7})
 
 (defn reducible? [p]
-  (= 1 (first p)))
+  (and (< 1 (count p))(not= 3 (first p))))
 
 (defn to-steps [coll]
   (->>
