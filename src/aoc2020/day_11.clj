@@ -161,14 +161,20 @@ LLLLLLLL..LLLLLL.LLL.LLLL.LLLLLLL.LLLL.LLLLLLLLL.LLLL.LLL.LLLL.LLLLL.LLLLLLLLLLL
                   surroundings (calc-surroundings l c grid)]
               (new-spot spot surroundings))))))))
 
-(defn part-1 []
-  (->> input
-    parse
-    (iterate (partial next-state around-area))
+(defn find-first-stable [coll]
+  (->>
+    coll
     (partition 2 1)
     (drop-while #(apply not= %))
     first
     first
+    ))
+
+(defn part-1 []
+  (->> input
+    parse
+    (iterate (partial next-state around-area))
+    find-first-stable
     flatten
     (filter #{\#})
     count))
