@@ -151,15 +151,16 @@ LLLLLLLL..LLLLLL.LLL.LLLL.LLLLLLL.LLLL.LLLLLLLLL.LLLL.LLL.LLLL.LLLLL.LLLLLLLLLLL
            \#))))
 
 (defn next-state [calc-surroundings grid]
-  (vec
-    (map vec
-      (let [[nl nc] (dims grid)]
-        (partition nc
-          (for [l (range nl)
-                c (range nc)]
-            (let [spot (get-in grid [l c])
-                  surroundings (calc-surroundings l c grid)]
-              (new-spot spot surroundings))))))))
+  (->>
+    (let [[nl nc] (dims grid)]
+      (partition nc
+        (for [l (range nl)
+              c (range nc)]
+          (let [spot (get-in grid [l c])
+                surroundings (calc-surroundings l c grid)]
+            (new-spot spot surroundings)))))
+    (map vec)
+    vec))
 
 (defn find-first-stable [coll]
   (->>
