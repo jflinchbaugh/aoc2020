@@ -118,6 +118,7 @@
    (map count)
    (reduce *)))
 
+;; https://en.wikipedia.org/wiki/Lazy_caterer%27s_sequence
 (defn count-combos [i]
   (if (>= 1 i) 1
       (+ (dec i) (count-combos (dec i)))))
