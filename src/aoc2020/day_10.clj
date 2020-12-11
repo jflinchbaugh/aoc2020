@@ -107,47 +107,48 @@
 
 (defn part-1 [input]
   (->>
-    input
-    (cons 0)
-    (cons (+ 3 (apply max input)))
-    sort
-    (partition 2 1)
-    (map #(reduce - (reverse %)))
-    sort
-    (partition-by identity)
-    (map count)
-    (reduce *)))
+   input
+   (cons 0)
+   (cons (+ 3 (apply max input)))
+   sort
+   (partition 2 1)
+   (map #(reduce - (reverse %)))
+   sort
+   (partition-by identity)
+   (map count)
+   (reduce *)))
 
-(def count-combos {1 1, 2 2, 3 4, 4 7})
+(defn count-combos [i]
+  (if (>= 1 i) 1
+      (+ (dec i) (count-combos (dec i)))))
 
 (defn reducible? [p]
-  (and (< 1 (count p))(not= 3 (first p))))
+  (and (< 1 (count p)) (not= 3 (first p))))
 
 (defn to-steps [coll]
   (->>
-    coll
-    (partition 2 1)
-    (map #(reduce - (reverse %))))
-  )
+   coll
+   (partition 2 1)
+   (map #(reduce - (reverse %)))))
 
 (defn part-2 [input]
   (->>
-    input
-    (cons 0)
-    (cons (+ 3 (apply max input)))
-    sort
-    to-steps
-    (partition-by identity)
-    (filter reducible?)
-    (map count)
-    (map count-combos)
-    (reduce *)))
+   input
+   (cons 0)
+   (cons (+ 3 (apply max input)))
+   sort
+   to-steps
+   (partition-by identity)
+   (filter reducible?)
+   (map count)
+   (map count-combos)
+   (reduce *)))
 
 (comment
   (part-1 input)
+
 ;; => 2414
 
   (part-2 input)
 ;; => 21156911906816
-
   )
