@@ -126,8 +126,9 @@ LLLLLLLL..LLLLLL.LLL.LLLL.LLLLLLL.LLLL.LLLLLLLLL.LLLL.LLL.LLLL.LLLLL.LLLLLLLLLLL
 (defn spot-in-area [area]
   (get area 4))
 
-(defn around-area [area]
-  (concat (take 4 area) (take-last 4 area)))
+(defn around-area [l c grid]
+  (let [area (area-of l c grid)]
+  (concat (take 4 area) (take-last 4 area))))
 
 (defn dims [grid]
   [(count grid) (count (first grid))])
@@ -149,22 +150,33 @@ LLLLLLLL..LLLLLL.LLL.LLLL.LLLLLLL.LLLL.LLLLLLLLL.LLLL.LLL.LLLL.LLLLL.LLLLLLLLLLL
            \L
            \#))))
 
-(defn next-state [grid]
+(defn next-state [calc-surroundings grid]
   (vec
     (map vec
       (let [[nl nc] (dims grid)]
         (partition nc
           (for [l (range nl)
                 c (range nc)]
-            (let [area (area-of l c grid)
-                  spot (spot-in-area area)
-                  surroundings (around-area area)]
+            (let [spot (get-in grid [l c])
+                  surroundings (calc-surroundings l c grid)]
               (new-spot spot surroundings))))))))
 
 (defn part-1 []
   (->> input
     parse
-    (iterate next-state)
+    (iterate (partial next-state around-area))
+    (partition 2 1)
+    (drop-while #(apply not= %))
+    first
+    first
+    flatten
+    (filter #{\#})
+    count))
+
+(defn part-2 []
+  (->> input
+    parse
+    (iterate (partial next-state around-area))
     (partition 2 1)
     (drop-while #(apply not= %))
     first
@@ -175,11 +187,10 @@ LLLLLLLL..LLLLLL.LLL.LLLL.LLLLLLL.LLLL.LLLLLLLLL.LLLL.LLL.LLLL.LLLLL.LLLLLLLLLLL
 
 (comment
 
-  (->> input parse (area-of 1 1))
-
-  (->> input parse next-state next-state next-state)
-
   (part-1)
 ;; => 2476
+
+
+
 
   )
