@@ -104,11 +104,11 @@ LLLLLLLL..LLLLLL.LLL.LLLL.LLLLLLL.LLLL.LLLLLLLLL.LLLL.LLL.LLLL.LLLLL.LLLLLLLLLLL
 
 (defn parse [input]
   (->>
-    input
-    s/trim
-    s/split-lines
-    (map vec)
-    vec))
+   input
+   s/trim
+   s/split-lines
+   (map vec)
+   vec))
 
 (defn area-of [l c grid]
   [(get-in grid [(dec l) (dec c)])
@@ -123,81 +123,91 @@ LLLLLLLL..LLLLLL.LLL.LLLL.LLLLLLL.LLLL.LLLLLLLLL.LLLL.LLL.LLLL.LLLLL.LLLLLLLLLLL
    (get-in grid [(inc l) c])
    (get-in grid [(inc l) (inc c)])])
 
-(defn spot-in-area [area]
-  (get area 4))
-
-(defn around-area [l c grid]
+(defn adjacent-area [[l c] grid]
   (let [area (area-of l c grid)]
-  (concat (take 4 area) (take-last 4 area))))
+    (concat (take 4 area) (take-last 4 area))))
 
 (defn dims [grid]
   [(count grid) (count (first grid))])
 
 (defn num-occupied [spots]
   (->>
-    spots
-    (filter #{\#})
-    count))
+   spots
+   (filter #{\#})
+   count))
 
-(defn new-spot [spot surroundings]
+(defn new-spot [too-many spot surroundings]
   (let [occupied (num-occupied surroundings)]
     (case spot
       \. \.
       \L (if (zero? occupied)
            \#
            \L)
-      \# (if (<= 4 occupied)
+      \# (if (<= too-many occupied)
            \L
            \#))))
 
-(defn next-state [calc-surroundings grid]
+(defn next-state [too-many calc-surroundings grid]
   (->>
-    (let [[nl nc] (dims grid)]
-      (partition nc
-        (for [l (range nl)
-              c (range nc)]
-          (let [spot (get-in grid [l c])
-                surroundings (calc-surroundings l c grid)]
-            (new-spot spot surroundings)))))
-    (map vec)
-    vec))
+   (let [[nl nc] (dims grid)]
+     (partition nc
+                (for [l (range nl)
+                      c (range nc)]
+                  (let [spot (get-in grid [l c])
+                        surroundings (calc-surroundings [l c] grid)]
+                    (new-spot too-many spot surroundings)))))
+   (map vec)
+   vec))
 
 (defn find-first-stable [coll]
   (->>
-    coll
-    (partition 2 1)
-    (drop-while #(apply not= %))
-    first
-    first
-    ))
+   coll
+   (partition 2 1)
+   (drop-while #(apply not= %))
+   first
+   first))
 
 (defn part-1 []
   (->> input
-    parse
-    (iterate (partial next-state around-area))
-    find-first-stable
-    flatten
-    (filter #{\#})
-    count))
+       parse
+       (iterate (partial next-state 4 adjacent-area))
+       find-first-stable
+       flatten
+       (filter #{\#})
+       count))
+
+(defn path [[ol oc] [cl cc] grid]
+  (for [step (range 1 (max (count grid) (count (first grid))))]
+    (nth (nth grid (+ ol (* cl step)) []) (+ oc (* cc step)) \.)))
+
+(defn look-seats [[ol oc] [cl cc] grid]
+  (->>
+    grid
+    (path [ol oc] [cl cc])
+    (remove #{\.})
+    first))
+
+(defn visible-seats [[l c] grid]
+  (for [dl (map dec (range 3))
+        dc (map dec (range 3))
+        :when (not= [0 0] [dl dc])]
+    (look-seats [l c] [dl dc] grid)))
 
 (defn part-2 []
   (->> input
-    parse
-    (iterate (partial next-state around-area))
-    (partition 2 1)
-    (drop-while #(apply not= %))
-    first
-    first
-    flatten
-    (filter #{\#})
-    count))
+       parse
+       (iterate (partial next-state 5 visible-seats))
+       find-first-stable
+       flatten
+       (filter #{\#})
+       count))
 
 (comment
 
   (part-1)
 ;; => 2476
 
-
-
+  (part-2)
+;; => 2257
 
   )
