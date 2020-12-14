@@ -814,7 +814,7 @@ F42
 (defn new-heading [heading dir v]
   (if (zero? v)
     heading
-    (new-heading (dir heading) dir (- v 90))))
+    (recur (dir heading) dir (- v 90))))
 
 (defn next-pos [[[x y] heading] [i v]]
   (case i
@@ -827,6 +827,28 @@ F42
     \R [[x y] (new-heading heading dirs-right v)]
     [[x y] heading]))
 
+
+(defn turn-right [[wx wy] d]
+  (if (zero? d)
+    [wx wy]
+    (recur [wy (* -1 wx)] (- d 90))))
+
+(defn turn-left [[wx wy] d]
+  (if (zero? d)
+    [wx wy]
+    (recur [(* -1 wy) wx] (- d 90))))
+
+(defn make-move [[[sx sy] [wx wy]] [i v]]
+  (case i
+    \N [[sx sy] [wx (+ wy v)]]
+    \S [[sx sy] [wx (- wy v)]]
+    \E [[sx sy] [(+ wx v) wy]]
+    \W [[sx sy] [(- wx v) wy]]
+    \F [[(+ sx (* wx v)) (+ sy (* wy v))] [wx wy]]
+    \L [[sx sy] (turn-left [wx wy] v)]
+    \R [[sx sy] (turn-right [wx wy] v)]
+    [[sx sy] [wx wy]]))
+
 (defn abs [n] (Math/abs n))
 
 (defn manhattan [[sx sy] [dx dy]]
@@ -835,11 +857,15 @@ F42
 (defn part-1 []
   (->> input parse (reduce next-pos  [[0 0] \E]) first (manhattan [0 0])))
 
+(defn part-2 []
+  (->> input parse (reduce make-move [[0 0] [10 1]]) first (manhattan [0 0])))
+
 (comment
 
   (part-1)
+;; => 2270
 
-
-
+  (part-2)
+;; => 138669
 
   )
