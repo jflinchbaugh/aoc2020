@@ -827,23 +827,18 @@ F42
     \R [[x y] (new-heading heading dirs-right v)]
     [[x y] heading]))
 
-(defn walk [[pos heading] steps]
-  (if (empty? steps)
-    [pos heading]
-    (recur (next-pos [pos heading] (first steps)) (rest steps))))
-
 (defn abs [n] (Math/abs n))
 
 (defn manhattan [[sx sy] [dx dy]]
   (reduce + (map abs [(- dx sx) (- dy sy)])))
 
-
 (defn part-1 []
-  (->> input parse (walk [[0 0] \E]) first (manhattan [0 0])))
+  (->> input parse (reduce next-pos  [[0 0] \E]) first (manhattan [0 0])))
 
 (comment
 
-(part-1)
+  (part-1)
+
 
 
 
