@@ -9,13 +9,15 @@
 (defn parse-int [n] (Integer/parseInt n))
 
 (defn parse [input]
-  (->> (str/split input #",") (remove #{"x"}) (map parse-int)))
+  (->> (str/split input #",")))
 
 (defn next-arrival [earliest id] (* id (inc (int (/ earliest id)))))
 
 (defn part-1 []
-  (let [ids (->> input parse)
-        [next-arrival-time id] (->> ids (map #(-> [(next-arrival earliest %) %])) (sort-by first) first)]
+  (let [ids (->> input parse (remove #{"x"}) (map parse-int))
+        [next-arrival-time id] (->> ids
+                                 (map #(-> [(next-arrival earliest %) %]))
+                                 (sort-by first) first)]
     (* id (- next-arrival-time earliest))))
 
 (comment
@@ -23,4 +25,5 @@
 
   (part-1)
 ;; => 6568
+
   )
