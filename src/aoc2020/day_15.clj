@@ -2,27 +2,43 @@
 
 (def input [2,15,0,9,1,20])
 
-(defn next-num [coll]
-  (let [rev (reverse coll)
-        length (count coll)
-        last-num (first rev)
-        prev-nums (rest rev)
-        dist-back (inc (count (take-while (complement #{last-num}) prev-nums)))]
-    (if (= length dist-back) 0 dist-back))
-  )
+(defn catalog [[m sz l] n]
+  [(if l (assoc m l sz) m) (inc sz) n])
 
-(defn add-next [coll]
-  (conj coll (next-num coll)))
+(defn init-catalog [input]
+  (reduce catalog  [{} -1 nil] input))
+
+(defn next-num-catalog [[m sz last-num]]
+  (let [found (m last-num)]
+    (if found (- sz found) 0)))
+
+(defn catalog-next [[m sz last-num]]
+  (catalog [m sz last-num] (next-num-catalog [m sz last-num])))
 
 (defn part-1 []
   (->
-    (iterate add-next input)
+    (iterate catalog-next input)
     (nth (- 2020 (count input)))
+    last))
+
+(defn part-1 []
+  (->
+    (iterate catalog-next (init-catalog input))
+    (nth (- 2020 (count input)))
+    last))
+
+(defn part-2 []
+  (->
+    (iterate catalog-next (init-catalog input))
+    (nth (- 30000000 (count input)))
     last))
 
 (comment
 
   (part-1)
 ;; => 1280
+
+  (part-2)
+;; => 651639
 
   )
