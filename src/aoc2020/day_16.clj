@@ -1,5 +1,6 @@
 (ns aoc2020.day-16
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [clojure.set :as set]))
 
 (def rules "
 departure location: 49-239 or 247-960
@@ -307,9 +308,44 @@ zone: 49-118 or 132-952
       (filter #(empty? (match-rules validators %)))
       (reduce +))))
 
+(defn potential-fields [validators ticket]
+  (map (partial match-rules validators) ticket))
+
+(defn find-common [potentials n]
+  (->> potentials (map (comp set #(nth % n))) (apply set/intersection)))
+
+(defn part-2 []
+  (let [tickets (parse-tickets nearby-tickets)
+        validators (->> rules parse-rules)
+        potentials (->> tickets
+                     (map (partial potential-fields validators))
+                     (filter (comp empty? (partial filter empty?))))
+        field-count (-> potentials first count)
+        mine (-> my-ticket parse-tickets first)]
+    (->>
+      field-count
+      range
+      (map #(-> [% (find-common potentials %)]))
+      (sort-by (comp count second))
+      (reduce
+        (fn [coll field]
+          (conj
+            coll
+            [(first field)
+             (set/difference (second field)
+               (reduce set/union (map second coll)))])) [])
+      (map (fn [[field-num field-name]] [field-num (first field-name)]))
+      (filter #(re-matches #"departure.*" (second %)))
+      (map first)
+      (map #(nth mine %))
+      (reduce *))))
+
 (comment
 
   (part-1)
 ;; => 22977
+
+  (part-2)
+;; => 998358379943
 
   )
