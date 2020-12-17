@@ -1159,9 +1159,9 @@ iyr:2010 byr:1950 pid:405416908
                        "pid"})
 
 (defn read-passports [input]
-  (->>
-    (s/split input #"(?m)^$")
-    (map #(apply hash-map (s/split (s/trim %) #"[:\s]")))))
+  (map
+    #(apply hash-map (s/split (s/trim %) #"[:\s]"))
+    (s/split input #"(?m)^$")))
 
 (defn part-1 []
   (->>

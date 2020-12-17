@@ -299,7 +299,7 @@ zone: 49-118 or 132-952
 
 (defn part-1 []
   (let [tickets (parse-tickets nearby-tickets)
-        validators (->> rules parse-rules)]
+        validators (parse-rules rules)]
     (->>
       tickets
       flatten
@@ -314,7 +314,7 @@ zone: 49-118 or 132-952
 
 (defn part-2 []
   (let [tickets (parse-tickets nearby-tickets)
-        validators (->> rules parse-rules)
+        validators (parse-rules rules)
         potentials (->> tickets
                      (map (partial potential-fields validators))
                      (filter (comp empty? (partial filter empty?))))
