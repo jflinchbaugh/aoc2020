@@ -1,5 +1,6 @@
 (ns aoc2020.day-05
-  (:require [clojure.string :as s]))
+  (:require [aoc2020.core :refer :all]
+            [clojure.string :as s]))
 
 (def input "
 BFFBFBBRLR
@@ -868,9 +869,6 @@ FBFFBFFLLL
 
 (defn seat-between? [[a b]]
   (= 2 (Math/abs (- b a))))
-
-(defn avg [coll]
-  (/ (reduce + coll) (count coll)))
 
 (defn part-2 [input]
     (->>

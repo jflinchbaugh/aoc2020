@@ -1,5 +1,6 @@
 (ns aoc2020.day-12
-  (:require [clojure.string :as str]
+  (:require [aoc2020.core :refer :all]
+            [clojure.string :as str]
             [clojure.string :as s]))
 
 (def input "
@@ -848,8 +849,6 @@ F42
     \L [[sx sy] (turn-left [wx wy] v)]
     \R [[sx sy] (turn-right [wx wy] v)]
     [[sx sy] [wx wy]]))
-
-(defn abs [n] (Math/abs n))
 
 (defn manhattan [[sx sy] [dx dy]]
   (reduce + (map abs [(- dx sx) (- dy sy)])))

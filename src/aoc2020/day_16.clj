@@ -1,5 +1,6 @@
 (ns aoc2020.day-16
-  (:require [clojure.string :as str]
+  (:require [aoc2020.core :refer :all]
+            [clojure.string :as str]
             [clojure.set :as set]))
 
 (def rules "
@@ -266,9 +267,6 @@ zone: 49-118 or 132-952
 298,541,103,248,694,226,630,796,116,864,887,192,296,400,715,288,711,913,820,892
 572,367,922,916,416,116,859,589,587,633,688,272,692,578,885,803,282,207,563,641
 ")
-
-(defn parse-int [i]
-  (Integer/parseInt i))
 
 (defn parse-line [[name & nums]]
   (cons name (map parse-int nums)))

@@ -1,5 +1,6 @@
 (ns aoc2020.day-14
-  (:require [clojure.string :as str]))
+  (:require [aoc2020.core :refer :all]
+            [clojure.string :as str]))
 
 (def input "
 mask = 01101X001X111X010X0000X1001X010XX0X0
@@ -557,12 +558,6 @@ mem[53999] = 257358
 
 (defn parse [input]
   (->> input str/trim str/split-lines (map #(str/split % #"[^\d\w]+"))))
-
-(defn parse-long
-  ([s]
-   (Long/parseLong s))
-  ([s rad]
-   (Long/parseLong s rad)))
 
 (defn left-pad [ch n coll]
   (take-last n (concat (repeat n ch) coll)))
