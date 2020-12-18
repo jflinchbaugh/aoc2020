@@ -571,6 +571,17 @@ mem[53999] = 257358
     str/join
     (parse-long 2)))
 
+(defn apply-address-mask [mask address]
+  (-> (map
+        (fn [v m]
+             (case m
+               \0 v
+               \1 \1
+               \X \X))
+        (left-pad \0 36 (Integer/toString address 2))
+        mask))
+  [address])
+
 (defn run [[memory mask] [op & args]]
   (case op
     "mem" [(assoc
@@ -583,9 +594,24 @@ mem[53999] = 257358
 (defn part-1 []
   (->> input parse (reduce run [{} (str/join (repeat 36 \X))]) first vals (reduce +)))
 
+(defn run-2 [[memory mask] [op & args]]
+  (case op
+    "mem" (let [addresses (apply-address-mask mask (parse-long (first args)))
+                values (repeat (parse-long (second args)))
+                pairs (interleave addresses values)]
+            [(apply assoc memory pairs)
+             mask])
+    "mask" [memory (first args)]))
+
+(defn part-2 []
+  (->> input parse (reduce run-2 [{} (str/join (repeat 36 \0))])))
+
 (comment
 
   (part-1)
 ;; => 11926135976176
+
+
+  (part-2)
 
   )
