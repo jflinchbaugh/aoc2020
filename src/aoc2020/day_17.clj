@@ -14,7 +14,7 @@
 ")
 
 (defn parse [input]
-  (->> input str/trim str/split-lines (map seq)))
+  (->> input str/trim str/split-lines))
 
 (defn to-cube [ndims lsts]
   (->> (for [y (range (count lsts))
