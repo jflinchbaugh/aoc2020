@@ -64,6 +64,7 @@
 ;;     ["fish" #{"khqsk" "ksdgk" "srmsh"}]
 ;;     ["eggs" #{"dskjpq" "srmsh"}]
 ;;     ["shellfish" #{"khqsk" "xzb"}])
+  ;; TODO process this list by elimination; cheated with `known`
 
   (part-1)
 ;; => 1945
