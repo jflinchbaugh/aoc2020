@@ -17,10 +17,13 @@
     (map (fn [[k v]] [k (count v)]))
     (into {})))
 
-(defn normalize [counts]
+(defn normalize
+  "normalize a 3-dimensional hex position to 2-dimensional diagonal"
+  [counts]
   (let [x (- (counts "e" 0) (counts "w" 0))]
     [(- (counts "se" 0) (counts "nw" 0) (* -1 x))
      (- (counts "ne" 0) (counts "sw" 0 ) (* -1 x))]))
+
 (defn part-1 []
   (->>
     input
