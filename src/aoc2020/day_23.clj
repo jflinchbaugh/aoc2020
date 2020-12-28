@@ -39,10 +39,24 @@
       (take (dec (count start)))
       (str/join ""))))
 
+(defn part-2 []
+  (let [start (concat (parse input) (range 10 1000001))]
+    (->>
+      start
+      (iterate next-ring)
+      (take (inc 40))
+      last
+      cycle
+      (drop-while (partial not= 1))
+      rest
+      (take 2)
+      )))
+
 (comment
 
   (part-1)
 ;; => "76385429"
 
+  (part-2)
 
   .)
