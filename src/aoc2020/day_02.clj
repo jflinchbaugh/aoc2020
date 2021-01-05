@@ -1026,7 +1026,7 @@
   (->> input
     str/split-lines
     (remove #{""})
-    (map #(str/split % #"[ :-]+"))
+    (map #(->> % (re-matches #"(\d+)-(\d+) (\w): (\w+)") rest))
     (filter #(apply good? %))
     count))
 
