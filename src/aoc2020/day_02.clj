@@ -1011,7 +1011,7 @@
         pass-chars (seq pass)
         good-chars (filter #{ch} pass-chars)
         good-count (count good-chars)]
-    (and (>= good-count min) (<= good-count max))))
+    (<= min good-count max)))
 
 (defn good-part2? [pos1 pos2 ch pass]
   (let [pos1 (dec (Integer/parseInt pos1))
@@ -1038,8 +1038,10 @@
 (comment
 
   (part-1 input)
+;; => 456
 
   (part-2 input)
+;; => 308
 
   (good-part1? "1" "2" "n" "anbcn")
 
