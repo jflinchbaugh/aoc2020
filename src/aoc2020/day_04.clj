@@ -1,5 +1,6 @@
 (ns aoc2020.day-04
-  (:require [clojure.string :as s]))
+  (:require [clojure.string :as s]
+            [aoc2020.core :refer :all]))
 
 (def input "
 byr:1983 iyr:2017
@@ -1173,34 +1174,28 @@ iyr:2010 byr:1950 pid:405416908
    (filter #(= 7 %))
    count))
 
-(defn in-range? [v min max]
-  (and
-    (not (nil? v))
-    (>= (Integer/parseInt v) min)
-    (<= (Integer/parseInt v) max)))
-
 (defn valid-height? [h]
   (cond
-    (nil? h) false
-    (re-matches #".*cm" h) (in-range? (s/replace h #"\D" "") 150 193)
-    (re-matches #".*in" h) (in-range? (s/replace h #"\D" "") 59 76)
+    (re-matches #".*cm" h) (<= 150 (parse-int (s/replace h #"\D" "")) 193)
+    (re-matches #".*in" h) (<= 59 (parse-int (s/replace h #"\D" "")) 76)
     :else false
     ))
 
 (defn valid-hair? [hcl]
-  (and hcl (re-matches #"#[0123456789abcdef]{6}" hcl)))
+  (re-matches #"#[0-9a-f]{6}" hcl))
 
 (defn valid-eyes? [ecl]
   (#{"amb" "blu" "brn" "gry" "grn" "hzl" "oth"} ecl))
 
 (defn valid-pid? [pid]
-  (and pid (re-matches #"\d{9}" pid)))
+  (re-matches #"\d{9}" pid))
 
-(defn valid? [{:strs [byr iyr eyr hgt hcl ecl pid] :as passport}]
+(defn valid? [{:strs [byr iyr eyr hgt hcl ecl pid]}]
   (and
-    (in-range? byr 1920 2002)
-    (in-range? iyr 2010 2020)
-    (in-range? eyr 2020 2030)
+    byr iyr eyr hgt hcl ecl pid
+    (<= 1920 (parse-int byr) 2002)
+    (<= 2010 (parse-int iyr) 2020)
+    (<= 2020 (parse-int eyr) 2030)
     (valid-height? hgt)
     (valid-hair? hcl)
     (valid-eyes? ecl)
